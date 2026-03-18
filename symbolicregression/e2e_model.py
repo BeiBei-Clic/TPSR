@@ -9,7 +9,13 @@ import time
 class Transformer(nn.Module):
     def __init__(self, params, env, samples):
         super().__init__()
-        self.model = torch.load('./symbolicregression/weights/model.pt', weights_only=False)
+        self.device = getattr(params, "device", "cpu")
+        self.model = torch.load(
+            './symbolicregression/weights/model.pt',
+            map_location=self.device,
+            weights_only=False,
+        )
+        self.model.to(self.device)
         self.first_dropout = nn.Dropout(0.1)
         self.params = params
         self.env = env

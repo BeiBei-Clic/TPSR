@@ -154,6 +154,47 @@ python run.py --eval_mcts_in_domain True \
 
 
 
+## PMLB Inference
+
+For simplified PMLB inference using only TPSR (no multiple method comparison), use the dedicated script:
+
+### Single Dataset
+
+```bash
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset 1027_ESL --gpu 0
+```
+
+### Batch Inference
+
+To run on all PMLB datasets:
+
+```bash
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --gpu 1
+```
+
+To run on specific data types (Feynman, Strogatz, Black-box):
+
+```bash
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type feynman --gpu 0
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type strogatz --gpu 0
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type black-box --gpu 0
+```
+
+### Results
+
+Results are saved to `experiments/pmlb/results/pmlb_results.csv` with the following columns:
+- `dataset`: Dataset name
+- `r2`: R² score
+- `rmse`: Root mean squared error
+- `time`: Total inference time (seconds)
+- `complexity`: Expression complexity (number of tokens)
+- `expression`: Discovered symbolic expression
+
+中文汇总命令：
+```bash
+PYTHONPATH=. .venv/bin/python experiments/pmlb/pmlb_results_summary.py --input_csv experiments/pmlb/results/pmlb_results.csv --output_csv experiments/pmlb/results/pmlb_results_summary.csv
+```
+
 ## Demo
 We have also included a small demo that runs TPSR with both E2E and NesymReS backbones on your dataset. You can play with it [here](./tpsr_demo.py)
 
