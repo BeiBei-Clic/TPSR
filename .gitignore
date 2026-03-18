@@ -1,2 +1,5 @@
 dataset
 weights*
+datasets
+__pycache__
+model.pt
