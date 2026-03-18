@@ -96,6 +96,7 @@ def evaluate_pmlb(
         feynman_problems = pd.read_csv(
             "./datasets/feynman/FeynmanEquations.csv",
             delimiter=",",
+            dtype={'Filename': str}  # Ensure Filename is read as string
         )
         feynman_problems = feynman_problems[["Filename", "Formula"]].dropna().values
         feynman_formulas = {}
@@ -262,6 +263,7 @@ def evaluate_pmlb_mcts(
         feynman_problems = pd.read_csv(
             "./datasets/feynman/FeynmanEquations.csv",
             delimiter=",",
+            dtype={'Filename': str}  # Ensure Filename is read as string
         )
         feynman_problems = feynman_problems[["Filename", "Formula"]].dropna().values
         feynman_formulas = {}

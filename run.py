@@ -22,9 +22,9 @@ if __name__ == '__main__':
             r = requests.get(url, allow_redirects=True)
             open(model_path, 'wb').write(r.content)
         if not torch.cuda.is_available():
-            model = torch.load(model_path, map_location=torch.device('cpu'))
+            model = torch.load(model_path, map_location=torch.device('cpu'), weights_only=False)
         else:
-            model = torch.load(model_path)
+            model = torch.load(model_path, weights_only=False)
         print("Model successfully loaded!") 
         print(model.embedder)
 

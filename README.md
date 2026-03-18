@@ -155,16 +155,35 @@ python run.py --eval_mcts_in_domain True \
 
 
 ## Demo
-We have also included a small demo that runs TPSR with both E2E and NesymReS backbones on your dataset. You can play with it [here](./tpsr_demo.py) 
+We have also included a small demo that runs TPSR with both E2E and NesymReS backbones on your dataset. You can play with it [here](./tpsr_demo.py)
 
-E2E+TPSR:
-```
-python tpsr_demo.py --backbone_model e2e --no_seq_cache True --no_prefix_cache True
+### Quick Verification
+
+**Fast test (1-2 seconds):**
+```bash
+# Quick test with minimal parameters
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python quick_test.py
 ```
 
-NeSymReS+TPSR:
+**Full demo with E2E backbone (may take several minutes):**
+```bash
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python tpsr_demo.py --backbone_model e2e --no_seq_cache True --no_prefix_cache True
 ```
-python tpsr_demo.py --backbone_model nesymres --no_seq_cache True --no_prefix_cache True
+
+**Full demo with NeSymReS backbone:**
+```bash
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python tpsr_demo.py --backbone_model nesymres --no_seq_cache True --no_prefix_cache True
+```
+
+### Note on PYTHONPATH
+When running with NeSymReS backbone or if you encounter `ModuleNotFoundError: No module named 'nesymres.utils'`, set the PYTHONPATH to include the nesymres source directory:
+```bash
+export PYTHONPATH=nesymres/src:$PYTHONPATH
+```
+
+Then use the venv python directly:
+```bash
+.venv/bin/python tpsr_demo.py --backbone_model e2e --no_seq_cache True --no_prefix_cache True
 ```
 
 
