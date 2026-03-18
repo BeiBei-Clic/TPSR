@@ -2,4 +2,10 @@ dataset
 weights*
 datasets
 __pycache__
-model.pttree.json
+model.pt
+*.pt
+*.ckpt
+tree.json
+symbolicregression/saved_models/
+eval_result/
+datasets/
