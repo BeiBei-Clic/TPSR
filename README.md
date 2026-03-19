@@ -161,38 +161,57 @@ For simplified PMLB inference using only TPSR (no multiple method comparison), u
 ### Single Dataset
 
 ```bash
-PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset 1027_ESL --gpu 0
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset 1027_ESL --device cuda:0
 ```
 
 ### Batch Inference
 
-To run on all PMLB datasets:
+无噪声 smoke，先快速验证全流程、CSV 落盘和断点续跑：
 
 ```bash
-PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --gpu 1
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --device cuda:0 --dataset_limit 2 --max_rows 64 --max_input_points 32
 ```
 
-To run on specific data types (Feynman, Strogatz, Black-box):
+默认全量无噪声批跑，结果默认写到 `experiments/pmlb/results/pmlb_batch_inference_noise_0.csv`：
 
 ```bash
-PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type feynman --gpu 0
-PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type strogatz --gpu 0
-PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type black-box --gpu 0
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --device cuda:0
+```
+
+带噪声示例，只给训练目标加乘性高斯噪声 `y -> y * (1 + ξ)`：
+
+```bash
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --device cuda:0 --noise_strength 0.1
+```
+
+按数据组筛选时可继续使用：
+
+```bash
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type feynman --device cuda:0
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type strogatz --device cuda:0
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --data_type black-box --device cuda:0
 ```
 
 ### Results
 
-Results are saved to `experiments/pmlb/results/pmlb_results.csv` with the following columns:
+Results are saved to `experiments/pmlb/results/` and the default file name includes the noise strength, for example `pmlb_batch_inference_noise_0.csv` or `pmlb_batch_inference_noise_0.1.csv`.
+
+The batch CSV columns are:
 - `dataset`: Dataset name
+- `status`: `success`, `failed`, or `skipped`
+- `n_features`: Number of input features
+- `refinement_type`: Refinement used for the final expression
 - `r2`: R² score
 - `rmse`: Root mean squared error
-- `time`: Total inference time (seconds)
 - `complexity`: Expression complexity (number of tokens)
-- `expression`: Discovered symbolic expression
+- `seconds`: Total inference time (seconds)
+- `error`: Failure or skip message
+- `noise_strength`: Multiplicative Gaussian target-noise strength used for this run
+- `expr`: Discovered symbolic expression
 
 中文汇总命令：
 ```bash
-PYTHONPATH=. .venv/bin/python experiments/pmlb/pmlb_results_summary.py --input_csv experiments/pmlb/results/pmlb_results.csv --output_csv experiments/pmlb/results/pmlb_results_summary.csv
+PYTHONPATH=. .venv/bin/python experiments/pmlb/pmlb_results_summary.py --input_csv experiments/pmlb/results/pmlb_batch_inference_noise_0.csv --output_csv experiments/pmlb/results/pmlb_results_summary.csv
 ```
 
 ## Demo

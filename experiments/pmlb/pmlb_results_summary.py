@@ -99,7 +99,7 @@ def build_summary(input_df):
         ]
         seconds_values = [
             value
-            for value in (to_finite_float(v) for v in group_df["time"])
+            for value in (to_finite_float(v) for v in group_df["seconds"])
             if value is not None
         ]
 
@@ -165,11 +165,15 @@ def main():
         raise FileNotFoundError(f"Input CSV not found: {args.input_csv}")
 
     input_df = pd.read_csv(args.input_csv)
-    required_columns = {"dataset", "r2", "time", "complexity"}
+    time_column = "seconds" if "seconds" in input_df.columns else "time"
+    required_columns = {"dataset", "r2", time_column, "complexity"}
     missing_columns = required_columns - set(input_df.columns)
     if missing_columns:
         missing = ", ".join(sorted(missing_columns))
         raise ValueError(f"Missing required columns in input CSV: {missing}")
+
+    if time_column != "seconds":
+        input_df = input_df.rename(columns={time_column: "seconds"})
 
     summary_df = build_summary(input_df)
 
