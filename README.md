@@ -211,7 +211,7 @@ The batch CSV columns are:
 
 中文汇总命令：
 ```bash
-PYTHONPATH=. .venv/bin/python experiments/pmlb/pmlb_results_summary.py --input_csv experiments/pmlb/results/pmlb_batch_inference_noise_0.csv --output_csv experiments/pmlb/results/pmlb_results_summary.csv
+PYTHONPATH=. .venv/bin/python experiments/pmlb/pmlb_results_summary.py --input_csvs experiments/pmlb/results/pmlb_results.csv experiments/pmlb/results/pmlb_batch_inference_noise_0.001.csv experiments/pmlb/results/pmlb_batch_inference_noise_0.01.csv experiments/pmlb/results/pmlb_batch_inference_noise_0.1.csv --output_csv experiments/pmlb/results/pmlb_results_summary.csv
 ```
 
 ## Demo
