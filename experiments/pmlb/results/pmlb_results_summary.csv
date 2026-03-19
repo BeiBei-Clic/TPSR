@@ -1,4 +1,0 @@
-group,r2_mean,r2_var,r2_valid_count,total_count,recovery_rate,complexity_mean,complexity_var,complexity_count,seconds_mean,seconds_var,seconds_count
-Feynman,,,0,0,0.0,,,0,,,0
-Strogatz,,,0,0,0.0,,,0,,,0
-Black-box,0.4228721373644963,0.10444846092941722,4,4,0.0,67.75,1078.6875,4,254.7807999253273,18876.351058916018,4

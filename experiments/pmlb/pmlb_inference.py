@@ -16,6 +16,7 @@ import os
 import sys
 import time
 import copy
+import csv
 import numpy as np
 import pandas as pd
 from collections import defaultdict
@@ -106,6 +107,23 @@ def load_model(params):
     return env, model_wrapper
 
 
+def load_completed_datasets(output_path):
+    """Load dataset names that already exist in the output CSV."""
+    if not os.path.exists(output_path):
+        return set()
+
+    completed = set()
+    with open(output_path, newline="") as f:
+        reader = csv.DictReader(f)
+        if "dataset" not in (reader.fieldnames or []):
+            return set()
+        for row in reader:
+            dataset_name = row.get("dataset")
+            if dataset_name:
+                completed.add(dataset_name)
+    return completed
+
+
 def run_tpsr_inference(dataset_name, data_path, params, env, model_wrapper):
     """Run TPSR inference on a single dataset"""
     print(f"\n{'='*60}")
@@ -128,6 +146,13 @@ def run_tpsr_inference(dataset_name, data_path, params, env, model_wrapper):
 
     print(f"Dataset shape: X={X.shape}, y={y.shape}")
     print(f"Number of features: {len(feature_names)}")
+
+    if X.shape[1] > params.max_input_dimension:
+        print(
+            f"Skipping {dataset_name}: input dimension {X.shape[1]} "
+            f"exceeds max_input_dimension={params.max_input_dimension}"
+        )
+        return None
 
     # Split data
     x_to_fit, x_to_predict, y_to_fit, y_to_predict = train_test_split(
@@ -319,15 +344,24 @@ def main():
     # Create output directory
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
 
+    completed_datasets = load_completed_datasets(args.output)
+    if completed_datasets:
+        print(f"Found {len(completed_datasets)} completed dataset(s) in {args.output}")
+
     # Process each dataset
     results_list = []
-    first_write = True
+    first_write = not os.path.exists(args.output) or os.path.getsize(args.output) == 0
 
     for dataset_name in datasets:
+        if dataset_name in completed_datasets:
+            print(f"Skipping {dataset_name}: already exists in {args.output}")
+            continue
+
         result = run_tpsr_inference(dataset_name, args.data_path, params, env, model_wrapper)
 
         if result:
             results_list.append(result)
+            completed_datasets.add(dataset_name)
 
             # Append to CSV
             result_df = pd.DataFrame([result])

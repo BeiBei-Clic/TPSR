@@ -9,3 +9,4 @@ tree.json
 symbolicregression/saved_models/
 eval_result/
 datasets/
+results
