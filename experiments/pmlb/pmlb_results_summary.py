@@ -29,6 +29,7 @@ OUTPUT_COLUMNS = [
     "r2_var",
     "r2_valid_count",
     "total_count",
+    "skipped_count",
     "recovery_rate",
     "complexity_mean",
     "complexity_var",
@@ -39,6 +40,7 @@ OUTPUT_COLUMNS = [
 ]
 GROUP_ORDER = ["Feynman", "Strogatz", "Black-box"]
 SUCCESS_STATUSES = {"ok", "success"}
+SKIPPED_STATUSES = {"skipped"}
 NOISE_FILENAME_RE = re.compile(r"pmlb_batch_inference_noise_([^/]+)\.csv$")
 
 
@@ -166,7 +168,14 @@ def build_summary(input_df):
             group_df = noise_df[noise_df["group"] == group]
             total_count = int(len(group_df))
 
-            raw_r2 = pd.to_numeric(group_df["r2"], errors="coerce")
+            # Filter out skipped samples
+            status_series = group_df["status"].astype(str).str.lower()
+            skipped_mask = status_series.isin(SKIPPED_STATUSES)
+            non_skipped_df = group_df[~skipped_mask]
+            non_skipped_count = int(len(non_skipped_df))
+
+            # Calculate r2 stats only from non-skipped samples
+            raw_r2 = pd.to_numeric(non_skipped_df["r2"], errors="coerce")
             finite_r2 = raw_r2[np.isfinite(raw_r2)]
             r2_valid_count = int((finite_r2 >= 0).sum())
 
@@ -174,9 +183,8 @@ def build_summary(input_df):
             cleaned_r2[~np.isfinite(cleaned_r2)] = 0.0
             cleaned_r2[cleaned_r2 < 0] = 0.0
 
-            status_series = group_df["status"].astype(str).str.lower()
-            success_mask = status_series.isin(SUCCESS_STATUSES)
-            success_df = group_df[success_mask]
+            success_mask = status_series[~skipped_mask].isin(SUCCESS_STATUSES)
+            success_df = non_skipped_df[success_mask]
 
             complexity_values = [
                 value
@@ -189,10 +197,11 @@ def build_summary(input_df):
                 if value is not None
             ]
 
+            # Recovery rate: only count non-skipped samples
             recovery_rate = 0.0
-            if total_count > 0:
+            if non_skipped_count > 0:
                 recovery_hits = int(((np.isfinite(raw_r2)) & (raw_r2 > 0.9)).sum())
-                recovery_rate = float(recovery_hits / total_count)
+                recovery_rate = float(recovery_hits / non_skipped_count)
 
             summary_rows.append(
                 {
@@ -201,7 +210,8 @@ def build_summary(input_df):
                     "r2_mean": safe_mean(cleaned_r2.tolist()),
                     "r2_var": safe_var(cleaned_r2.tolist()),
                     "r2_valid_count": r2_valid_count,
-                    "total_count": total_count,
+                    "total_count": non_skipped_count,
+                    "skipped_count": total_count - non_skipped_count,
                     "recovery_rate": recovery_rate,
                     "complexity_mean": safe_mean(complexity_values),
                     "complexity_var": safe_var(complexity_values),

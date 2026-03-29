@@ -181,7 +181,7 @@ PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_infer
 带噪声示例，只给训练目标加乘性高斯噪声 `y -> y * (1 + ξ)`：
 
 ```bash
-PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --device cuda:0 --noise_strength 0.1
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/pmlb/pmlb_inference.py --dataset all --device cuda:1 --noise_strength 0.1
 ```
 
 按数据组筛选时可继续使用：
@@ -211,7 +211,7 @@ The batch CSV columns are:
 
 中文汇总命令：
 ```bash
-PYTHONPATH=. .venv/bin/python experiments/pmlb/pmlb_results_summary.py --input_csvs experiments/pmlb/results/pmlb_results.csv experiments/pmlb/results/pmlb_batch_inference_noise_0.001.csv experiments/pmlb/results/pmlb_batch_inference_noise_0.01.csv experiments/pmlb/results/pmlb_batch_inference_noise_0.1.csv --output_csv experiments/pmlb/results/pmlb_results_summary.csv
+PYTHONPATH=. .venv/bin/python experiments/pmlb/pmlb_results_summary.py --input_csvs experiments/pmlb/TPSR_results/pmlb_batch_inference_noise_0.csv experiments/pmlb/TPSR_results/pmlb_batch_inference_noise_0.001.csv experiments/pmlb/TPSR_results/pmlb_batch_inference_noise_0.01.csv experiments/pmlb/TPSR_results/pmlb_batch_inference_noise_0.1.csv --output_csv experiments/pmlb/results/pmlb_results_summary.csv
 ```
 
 ## Demo
