@@ -11,3 +11,4 @@ eval_result/
 datasets/
 results
 experiments/pmlb/TPSR_results
+.codex

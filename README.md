@@ -214,6 +214,14 @@ The batch CSV columns are:
 PYTHONPATH=. .venv/bin/python experiments/pmlb/pmlb_results_summary.py --input_csvs experiments/pmlb/TPSR_results/pmlb_batch_inference_noise_0.csv experiments/pmlb/TPSR_results/pmlb_batch_inference_noise_0.001.csv experiments/pmlb/TPSR_results/pmlb_batch_inference_noise_0.01.csv experiments/pmlb/TPSR_results/pmlb_batch_inference_noise_0.1.csv --output_csv experiments/pmlb/results/pmlb_results_summary.csv
 ```
 
+## Synthetic Sequential-Limitation Experiment
+
+```bash
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/synthetic/tpsr_sequential_limitation.py --functions sin,exp,log1p --num_seeds 10 --n_points 100 --x_range -0.5 0.5 --device cuda:0
+
+PYTHONPATH=nesymres/src:$PYTHONPATH .venv/bin/python experiments/synthetic/tpsr_sequential_limitation.py --functions sin --num_seeds 1 --n_points 32 --x_range -0.5 0.5 --max_input_points 32 --device cuda:0 --output_csv experiments/synthetic/results/tpsr_sequential_limitation_smoke.csv
+```
+
 ## Demo
 We have also included a small demo that runs TPSR with both E2E and NesymReS backbones on your dataset. You can play with it [here](./tpsr_demo.py)
 
